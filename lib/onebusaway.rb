@@ -1,5 +1,5 @@
 require 'open-uri'
-require 'rexml/document'
+require 'json'
 
 class Onebusaway
 
@@ -11,14 +11,15 @@ class Onebusaway
   end
 
   def stop_by_id stop_id
-    xml = request 'stop', id: stop_id
+    result = request 'stop', id: stop_id
 
-    stop = Stop.from_xml xml
+    Stop.new result
   end
 
   def route_by_id route_id
-    xml = request 'route', id: route_id
-    route = Route.from_xml xml
+    result = request 'route', id: route_id
+
+    Route.new result
   end
 
   def stops_for_location lat, lon
@@ -54,13 +55,11 @@ class Onebusaway
   end
 
   def arrivals_and_departures_for_stop stop_id
-    doc = request 'arrivals-and-departures-for-stop', id: stop_id
+    result = request 'arrivals-and-departures-for-stop', id: stop_id
 
-    arrivals = []
-    doc.elements.each 'arrivalsAndDepartures/arrivalAndDeparture' do |arrival_el|
-      arrivals << ArrivalAndDeparture.from_xml(arrival_el)
+    result['arrivalsAndDepartures'].map do |arr_dep|
+      ArrivalAndDeparture.new arr_dep
     end
-    arrivals
   end
 
   private
@@ -71,7 +70,7 @@ class Onebusaway
     if id
       url += '/' + id
     end
-    url += '.xml?'
+    url += '.json?'
     options[:key] = @api_key
     url += options.to_a.map{|pair| "#{pair[0]}=#{pair[1]}"}.join("&")
     url
@@ -80,17 +79,15 @@ class Onebusaway
   def request call, url_options
     url = api_url call, url_options
 
-    doc = REXML::Document.new open url
-    root = doc.root
-    status_code = root.elements['code'].text
-    status_text = root.elements['text'].text
+    json = open(url).read
 
-    # failed status
-    unless /2\d{2}/.match(status_code)
-      raise "Request failed (#{status_code}): #{status_text}"
-    end
+    result = JSON.parse json
+    code = result['code'].to_s
+    text = result['text']
 
-    return root.elements['data']
+    raise "Request failed (#{code}): #{text}" unless code.start_with? '2'
+
+    result['data']
   end
 
   autoload :Agency,              'onebusaway/agency'

@@ -1,11 +1,15 @@
 class Onebusaway::Base
-  def self.from_xml(xml_or_data)
-    xml_or_data = REXML::Document.new(xml_or_data).root if xml_or_data.is_a?(String)
-    self.parse(xml_or_data)
+  attr_accessor :agency
+
+  def convert_id id
+    @agency, id = id.split('_', 2).map { |v| v.to_i }
+
+    id
   end
 
-  def self.parse(data)
-    raise NotImplementedError
+  def convert_timestamp timestamp
+    Time.at timestamp.to_i / 1000
   end
+
 end
 

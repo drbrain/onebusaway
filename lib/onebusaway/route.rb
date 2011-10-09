@@ -1,13 +1,21 @@
 class Onebusaway::Route < Onebusaway::Base
-  attr_accessor :id, :shortName, :longName, :description, :type, :url, :agency
-  def self.parse(data)
-    route = self.new
-    [:id, :shortName, :longName, :description, :type, :url].each do |attr|
-      value = data.elements[attr.to_s]
-      route.send("#{attr}=", value.text) if value
-    end
-    route.agency = Agency.parse(data.elements["agency"])
-    route
+  attr_accessor :agency
+  attr_accessor :description
+  attr_accessor :id
+  attr_accessor :long_name
+  attr_accessor :short_name
+  attr_accessor :type
+  attr_accessor :url
+
+  def initialize json
+    @id          = convert_id json['id']
+    @agency      = json['agency'].to_i
+    @description = json['description']
+    @long_name   = json['longName']
+    @short_name  = json['shortName']
+    @type        = json['type']
+    @url         = json['url']
   end
+
 end
 
