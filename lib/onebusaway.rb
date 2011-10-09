@@ -96,7 +96,7 @@ module Onebusaway
     end
 
   end
- 
+
   class Base
     def self.from_xml(xml_or_data)
       xml_or_data = REXML::Document.new(xml_or_data).root if xml_or_data.is_a?(String)
@@ -107,7 +107,7 @@ module Onebusaway
       raise "not implemented"
     end
   end
- 
+
   class Agency < Base
     attr_accessor :id, :name, :url, :timezone, :lang, :phone
     def self.parse(data)
