@@ -10,7 +10,7 @@ class Onebusaway::Route < Onebusaway::Object
 
   def initialize json
     @id          = convert_id json['id']
-    @agency      = json['agency'].to_i
+    @agency      = Onebusaway::Agency.new json['agency']
     @description = json['description']
     @long_name   = json['longName']
     @short_name  = json['shortName']
