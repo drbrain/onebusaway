@@ -1,3 +1,6 @@
+require 'open-uri'
+require 'rexml/document'
+
 module Onebusaway
 
   API_BASE = "http://api.onebusaway.org/api/where/"
