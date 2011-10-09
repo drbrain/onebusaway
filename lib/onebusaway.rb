@@ -97,85 +97,12 @@ module Onebusaway
 
   end
 
-  class Base
-    def self.from_xml(xml_or_data)
-      xml_or_data = REXML::Document.new(xml_or_data).root if xml_or_data.is_a?(String)
-      self.parse(xml_or_data)
-    end
+  autoload :Agency,              'onebusaway/agency'
+  autoload :ArrivalAndDeparture, 'onebusaway/arrival_and_departure'
+  autoload :Base,                'onebusaway/base'
+  autoload :EncodedPolyline,     'onebusaway/encoded_polyline'
+  autoload :Route,               'onebusaway/route'
+  autoload :Stop,                'onebusaway/stop'
 
-    def self.parse(data)
-      raise "not implemented"
-    end
-  end
-
-  class Agency < Base
-    attr_accessor :id, :name, :url, :timezone, :lang, :phone
-    def self.parse(data)
-      agency = self.new
-      [:id, :name, :url, :timezone, :lang, :phone].each do |attr|
-        value = data.elements[attr.to_s]
-        agency.send("#{attr}=", value.text) if value
-      end
-      agency
-    end
-  end
-
-  class ArrivalAndDeparture < Base
-    attr_accessor :routeId, :routeShortName, :tripId, :tripHeadsign, :stopId, :predictedArrivalTime, :scheduledArrivalTime, :predictedDepartureTime, :scheduledDepartureTime, :status
-    def self.parse(data)
-      arrival = self.new
-      [:routeId, :routeShortName, :tripId, :tripHeadsign, :stopId, :predictedArrivalTime, :scheduledArrivalTime, :predictedDepartureTime, :scheduledDepartureTime, :status].each do |attr|
-        value = data.elements[attr.to_s]
-        arrival.send("#{attr}=", value.text) if value
-      end
-      arrival
-    end
-
-    def minutes_from_now
-      @minutes_from_now ||= begin
-        at = predictedArrivalTime.to_i
-        if at == 0
-          # no predicted time, use scheduled
-          (scheduledArrivalTime.to_i/1000 - Time.now.to_i) / 60
-        else
-          (predictedArrivalTime.to_i/1000 - Time.now.to_i) / 60
-        end
-      end
-      @minutes_from_now
-    end
-  end
-
-  class EncodedPolyline < Base
-    attr_accessor :points, :length, :levels
-  end
-
-  class Route < Base
-    attr_accessor :id, :shortName, :longName, :description, :type, :url, :agency
-    def self.parse(data)
-      route = self.new
-      [:id, :shortName, :longName, :description, :type, :url].each do |attr|
-        value = data.elements[attr.to_s]
-        route.send("#{attr}=", value.text) if value
-      end
-      route.agency = Agency.parse(data.elements["agency"])
-      route
-    end
-  end
-
-  class Stop < Base
-    attr_accessor :id, :lat, :lon, :direction, :name, :code, :locationType, :routes
-    def self.parse(data)
-      stop = self.new
-      [:id, :lat, :lon, :direction, :name, :code, :locationType].each do |attr|
-        value = data.elements[attr.to_s]
-        stop.send("#{attr}=", value.text) if value
-      end
-      stop.routes ||= []
-      data.elements.each("routes/route") do |route_el|
-        stop.routes << Route.parse(route_el)
-      end
-      stop
-    end
-  end
 end
 
