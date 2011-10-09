@@ -5,7 +5,7 @@ class Onebusaway::Base
   end
 
   def self.parse(data)
-    raise "not implemented"
+    raise NotImplementedError
   end
 end
 
