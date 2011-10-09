@@ -3,65 +3,61 @@ require 'rexml/document'
 
 class Onebusaway
 
-  API_BASE = "http://api.onebusaway.org/api/where/"
+  attr_accessor :api_base
 
-  def api_key=(key)
-    @api_key = key
+  def initialize api_key
+    @api_key = api_key
+    @api_base = 'http://api.onebusaway.org/api/where/'
   end
 
-  def stop_by_id(params)
-    raise if params[:id].nil?
+  def stop_by_id stop_id
+    xml = request 'stop', id: stop_id
 
-    xml = request('stop', params)
-    stop = Stop.from_xml(xml)
+    stop = Stop.from_xml xml
   end
 
-  def route_by_id(params)
-    raise if params[:id].nil?
-
-    xml = request('route', params)
-    route = Route.from_xml(xml)
+  def route_by_id route_id
+    xml = request 'route', id: route_id
+    route = Route.from_xml xml
   end
 
-  def stops_for_location(params)
-    raise if params[:lat].nil? || params[:lon].nil?
+  def stops_for_location lat, lon
+    doc = request 'stops-for-location', lat: lat, lon: lon
 
-    doc = request('stops-for-location', params)
     stops = []
-    doc.elements.each("stops/stop") do |stop_el|
+
+    doc.elements.each 'stops/stop' do |stop_el|
       stops << Stop.from_xml(stop_el)
     end
+
     stops
   end
 
-  def routes_for_location(params)
-    raise if params[:lat].nil? || params[:lon].nil?
+  def routes_for_location lat, lon
+    doc = request 'routes-for-location', lat: lat, lon: lon
 
-    doc = request('routes-for-location', params)
     routes = []
-    doc.elements.each("routes/route") do |route_el|
+    doc.elements.each 'routes/route' do |route_el|
       routes << Route.from_xml(route_el)
     end
     routes
   end
 
-  def stops_for_route(params)
-    raise if params[:id].nil?
+  def stops_for_route route_id
+    doc = request 'stops-for-route', id: route_id
 
-    doc = request('stops-for-route', params)
     stops = []
-    doc.elements.each("stops/stop") do |stop_el|
+    doc.elements.each 'stops/stop' do |stop_el|
       stops << Stop.from_xml(stop_el)
     end
     stops
   end
 
-  def arrivals_and_departures_for_stop(params)
-    raise if params[:id].nil?
+  def arrivals_and_departures_for_stop stop_id
+    doc = request 'arrivals-and-departures-for-stop', id: stop_id
 
-    doc = request('arrivals-and-departures-for-stop', params)
     arrivals = []
-    doc.elements.each("arrivalsAndDepartures/arrivalAndDeparture") do |arrival_el|
+    doc.elements.each 'arrivalsAndDepartures/arrivalAndDeparture' do |arrival_el|
       arrivals << ArrivalAndDeparture.from_xml(arrival_el)
     end
     arrivals
@@ -70,12 +66,12 @@ class Onebusaway
   private
 
   def api_url(call, options = {})
-    url = API_BASE + call
+    url = @api_base + call
     id = options.delete(:id)
     if id
-      url += "/" + id
+      url += '/' + id
     end
-    url += ".xml?"
+    url += '.xml?'
     options[:key] = @api_key
     url += options.to_a.map{|pair| "#{pair[0]}=#{pair[1]}"}.join("&")
     url
@@ -86,15 +82,15 @@ class Onebusaway
 
     doc = REXML::Document.new(open(url))
     root = doc.root
-    status_code = root.elements["code"].text
-    status_text = root.elements["text"].text
+    status_code = root.elements['code'].text
+    status_text = root.elements['text'].text
 
     # failed status
     unless /2\d{2}/.match(status_code)
       raise "Request failed (#{status_code}): #{status_text}"
     end
 
-    return root.elements["data"]
+    return root.elements['data']
   end
 
   autoload :Agency,              'onebusaway/agency'
