@@ -65,9 +65,9 @@ class Onebusaway
 
   private
 
-  def api_url(call, options = {})
+  def api_url call, options = {}
     url = @api_base + call
-    id = options.delete(:id)
+    id = options.delete :id
     if id
       url += '/' + id
     end
@@ -77,10 +77,10 @@ class Onebusaway
     url
   end
 
-  def request(call, url_options)
-    url = api_url(call, url_options)
+  def request call, url_options
+    url = api_url call, url_options
 
-    doc = REXML::Document.new(open(url))
+    doc = REXML::Document.new open url
     root = doc.root
     status_code = root.elements['code'].text
     status_text = root.elements['text'].text
