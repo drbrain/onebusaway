@@ -31,7 +31,7 @@ class Onebusaway::ArrivalAndDeparture < Onebusaway::Base
       (@scheduled_arrival_time - Time.now) / 60
     else
       (@predicted_arrival_time - Time.now) / 60
-    end
+    end.round
   end
 end
 
