@@ -92,8 +92,8 @@ class Onebusaway
 
   autoload :Agency,              'onebusaway/agency'
   autoload :ArrivalAndDeparture, 'onebusaway/arrival_and_departure'
-  autoload :Base,                'onebusaway/base'
   autoload :EncodedPolyline,     'onebusaway/encoded_polyline'
+  autoload :Object,              'onebusaway/object'
   autoload :Route,               'onebusaway/route'
   autoload :Stop,                'onebusaway/stop'
 

@@ -1,4 +1,5 @@
-class Onebusaway::Base
+class Onebusaway::Object
+
   attr_accessor :agency
 
   def convert_id id

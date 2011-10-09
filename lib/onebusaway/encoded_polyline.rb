@@ -1,4 +1,5 @@
-class Onebusaway::EncodedPolyline < Onebusaway::Base
+class Onebusaway::EncodedPolyline < Onebusaway::Object
+
   attr_accessor :length
   attr_accessor :levels
   attr_accessor :points

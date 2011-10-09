@@ -1,4 +1,5 @@
-class Onebusaway::Route < Onebusaway::Base
+class Onebusaway::Route < Onebusaway::Object
+
   attr_accessor :agency
   attr_accessor :description
   attr_accessor :id

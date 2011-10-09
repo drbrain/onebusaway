@@ -1,4 +1,5 @@
-class Onebusaway::Stop < Onebusaway::Base
+class Onebusaway::Stop < Onebusaway::Object
+
   attr_accessor :code
   attr_accessor :direction
   attr_accessor :id

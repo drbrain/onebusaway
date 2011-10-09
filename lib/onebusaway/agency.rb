@@ -1,4 +1,5 @@
-class Onebusaway::Agency < Onebusaway::Base
+class Onebusaway::Agency < Onebusaway::Object
+
   attr_accessor :id
   attr_accessor :lang
   attr_accessor :name

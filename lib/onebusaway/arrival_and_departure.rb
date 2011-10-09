@@ -1,4 +1,5 @@
-class Onebusaway::ArrivalAndDeparture < Onebusaway::Base
+class Onebusaway::ArrivalAndDeparture < Onebusaway::Object
+
   attr_accessor :predicted_arrival_time
   attr_accessor :predicted_departure_time
   attr_accessor :route_id
@@ -33,5 +34,6 @@ class Onebusaway::ArrivalAndDeparture < Onebusaway::Base
       (@predicted_arrival_time - Time.now) / 60
     end.round
   end
+
 end
 
