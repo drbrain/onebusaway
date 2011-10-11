@@ -9,11 +9,9 @@ o = Onebusaway.new api_key
 
 arr_devs = o.arrivals_and_departures_for_stop agency, stop
 
-upcoming = arr_devs.select do |arr_dev|
-  arr_dev.route_id == 60
-end.map do |arr_dev|
-  arr_dev.minutes_from_now
-end
+upcoming = arr_devs.select { |arr_dev| arr_dev.route_id == 60 }.
+                    map    { |arr_dev| arr_dev.minutes_from_now }.
+                    select { |offset| offset > 0 }
 
 def minutes offset
   relative = offset.abs
